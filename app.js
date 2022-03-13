@@ -1,15 +1,11 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const mysql = require('mysql2');
-const userInfo = require('./routes/userInfo');
 
 const app = express();
-app.use(bodyParser.json());
-app.use('/users', userInfo);
+app.use(express.json());
 
-app.get('/', (req, res)=>{
-    res.send('Hello from Home Page');
-})
+//import routes
+const user = require('./routes/user');
 
+app.use('/api/v1', user);
 
 module.exports = app;
