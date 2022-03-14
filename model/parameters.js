@@ -10,6 +10,14 @@ module.exports = class userParameters{
         return db.execute(`SELECT * FROM parameters WHERE user_id = ?`, [user_id]);
     }
 
+    static parameterFlag(id){
+        return db.execute(`UPDATE user SET isParameters= ? WHERE user_id = ?`, [1, id]);
+    }
+
+    static removeParameter(user_id){
+        return db.execute(`DELETE FROM parameters WHERE user_id = ?`, [user_id]);
+    }
+
     static updateHeight(id, height){
         return db.execute(`UPDATE parameters SET height= ? WHERE user_id = ?`, [height, id]);
     }

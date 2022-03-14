@@ -55,7 +55,7 @@ exports.register = async (req, res) => {
         
         if(created){
             const token = await User.generateToken(created[0].insertId);
-            let userObj = {...user, user_id: created[0].insertId}
+            let userObj = {...user, user_id: created[0].insertId, isParameters:0, isGoal:0}
 
             return res.status(201).json({
                 success:true,
@@ -110,7 +110,7 @@ exports.update = async(req, res) => {
         if(userObj.password)
             updated = await User.updatePassword(user[0].user_id, userObj.password);
         
-        if(updated.affectedRows == 0)
+        if(updated[0].affectedRows == 0)
             return res.status(401).json({
                 success:false,
                 message: "User not found"

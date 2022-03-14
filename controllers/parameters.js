@@ -12,11 +12,19 @@ exports.add = async (req, res) => {
         
         const added = await Parameters.addParameters(user[0].user_id, parameters.height, parameters.weight, parameters.dob, parameters.gender);
         
-        if(added)
-            return res.status(201).json({
-                success:true,
-                message: "Parameters added successful",
-            });
+        if(added){
+            // update the isParamters flag in user table
+            const update = await Parameters.parameterFlag(user[0].user_id);
+            if(update[0].affectedRows >0)
+                return res.status(201).json({
+                    success:true,
+                    message: "Parameters added successful",
+                });
+            else{
+                await Parameters.removeParameter(user[0].user_id);
+                res.status(500).json({message:"Server Error 2"})
+            }    
+        }
         else
             res.status(500).json({message:"Server Error 2"})
             
@@ -59,11 +67,16 @@ exports.update = async(req, res) => {
         const parameters = req.body;
         let updated; // to check is any row affected by update or not
         
-    
         if(parameters.height == null && parameters.weight == null && parameters.dob == null && parameters.gender == null)
             return res.status(400).json({
                 success:false,
                 message: "Not shared data to update",
+        });
+
+        if(parameters.height == null || parameters.weight == null || parameters.dob == null || parameters.gender == null)
+            return res.status(400).json({
+                success:false,
+                message: "Can't update empty fields",
         });
 
         if(parameters.height)
@@ -78,7 +91,7 @@ exports.update = async(req, res) => {
         if(parameters.gender)
             updated = await Parameters.updateGender(user[0].user_id, parameters.gender);
         
-        if(updated.affectedRows == 0)
+        if(updated[0].affectedRows == 0)
             return res.status(401).json({
                 success:false,
                 message: "Parameters not found"
