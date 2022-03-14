@@ -17,12 +17,7 @@ exports.isAuthenticated = async(req, res, next) =>{
                     message: "You have no access"
                 })
 
-            if(req.params.id == id)
-                req.user = await User.findById(id);
-            else
-                return res.status(403).json({
-                    message: "invalid argument"
-                })
+            req.user = await User.findById(id);
             next();
         })
 

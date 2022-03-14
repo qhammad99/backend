@@ -80,18 +80,32 @@ exports.update = async(req, res) => {
         const [user]= req.user;
         const userObj = req.body;
         let updated; // to check is any row affected by update or not
-
+    
         if(userObj.email == null && userObj.password == null && userObj.name == null)
             return res.status(400).json({
                 success:false,
                 message: "Not shared data to update",
         });
 
+        if(userObj.email == null || userObj.password == null || userObj.name == null)
+            return res.status(400).json({
+                success:false,
+                message: "Please don't pass empty fields",
+        });
+
+        if(userObj.email){
+            const [mailVerify] = await User.findUser(userObj.email);
+    
+            if(mailVerify.length != 0)
+                return res.status(409).json({
+                    message: "Email already exist"
+                });
+
+            updated = await User.updateEmail(user[0].user_id, userObj.email);
+        }
+
         if(userObj.name)
             updated = await User.updateName(user[0].user_id, userObj.name);
-
-        if(userObj.email)
-            updated = await User.updateEmail(user[0].user_id, userObj.email);
     
         if(userObj.password)
             updated = await User.updatePassword(user[0].user_id, userObj.password);
