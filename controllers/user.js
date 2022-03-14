@@ -74,49 +74,44 @@ exports.register = async (req, res) => {
         })
     }
 }
-/////////////////////////////////////////////////////////////////////////
 
-// exports.removeUserInfo = (req, res) => {
-//     const {id} = req.params;
-//     dbConnection.query( `DELETE FROM user_info WHERE user_id = ?`, [id], (error, results, fields) => {
-//         if (error) throw error;
-//         console.log(results);
-//         res.send(results);
-//     });
-// }
+exports.update = async(req, res) => {
+    try {
+        const [user]= req.user;
+        const userObj = req.body;
+        let updated; // to check is any row affected by update or not
 
-// exports.updateUserInfo = (req, res) => {
-//     const {id} = req.params;
-//     console.log(req.body);
-//     if(req.body.name){
-//         dbConnection.query( `UPDATE user_info SET name= ? WHERE user_id = ?`,[req.body.name, id], (error, results, fields) => {
-//             if (error) throw error;
-//             console.log(results);
-//             res.send(results);
-//         });
-//     }
+        if(userObj.email == null && userObj.password == null && userObj.name == null)
+            return res.status(400).json({
+                success:false,
+                message: "Not shared data to update",
+        });
 
-//     if(req.body.email){
-//         dbConnection.query( `UPDATE user_info SET email= ? WHERE user_id = ?`,[req.body.email, id], (error, results, fields) => {
-//             if (error) throw error;
-//             console.log(results);
-//             res.send(results);
-//         });
-//     }
+        if(userObj.name)
+            updated = await User.updateName(user[0].user_id, userObj.name);
 
-//     if(req.body.password){
-//         dbConnection.query( `UPDATE user_info SET password= ? WHERE user_id = ?`, [req.body.password, id], (error, results, fields) => {
-//             if (error) throw error;
-//             console.log(results);
-//             res.send(results);
-//         });
-//     }
+        if(userObj.email)
+            updated = await User.updateEmail(user[0].user_id, userObj.email);
+    
+        if(userObj.password)
+            updated = await User.updatePassword(user[0].user_id, userObj.password);
+        
+        if(updated.affectedRows == 0)
+            return res.status(401).json({
+                success:false,
+                message: "User not found"
+            });
 
-//     if(req.body.coach_id){
-//         dbConnection.query( `UPDATE user_info SET coach_id= ? WHERE user_id = ?`,[req.body.coach_id, id], (error, results, fields) => {
-//             if (error) throw error;
-//             console.log(results);
-//             res.send(results);
-//         });
-//     }
-// }
+        res.status(200).json({
+            success:true,
+            message:"updated successfully"
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            success:false,
+            message:error.message,
+        })
+    }
+
+}

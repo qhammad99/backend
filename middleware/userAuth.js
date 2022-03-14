@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const User = require('../model/user');
 
 exports.isAuthenticated = async(req, res, next) =>{
     try{
@@ -10,14 +11,18 @@ exports.isAuthenticated = async(req, res, next) =>{
                 message: "Token not found"
             });
         
-        jwt.verify(token, process.env.JWT_SECRET, (err, id)=>{
+        jwt.verify(token, process.env.JWT_SECRET, async(err, id)=>{
             if(err)
                 return res.status(403).json({
                     message: "You have no access"
                 })
 
-            //i will get user here by calling model
-            // req.user = model(id)
+            if(req.params.id == id)
+                req.user = await User.findById(id);
+            else
+                return res.status(403).json({
+                    message: "invalid argument"
+                })
             next();
         })
 
