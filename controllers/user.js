@@ -38,7 +38,7 @@ exports.login = async (req, res) => {
 exports.register = async (req, res) => {
     const user = req.body;
     try{
-        if(user.email == null || user.password == null)
+        if(user.email == null || user.password == null || user.name == null ||user.u_type == null)
             return res.status(400).json({
                 success:false,
                 message: "Please Fill all Fields",
@@ -55,8 +55,12 @@ exports.register = async (req, res) => {
         
         if(created){
             const token = await User.generateToken(created[0].insertId);
-            let userObj = {...user, user_id: created[0].insertId, isParameters:0, isGoal:0}
-
+            let userObj;
+            if(user.u_type = 1)
+                userObj = {...user, user_id: created[0].insertId, isParameters:0, isGoal:0, u_type:"User"}
+            else
+                userObj = {...user, user_id: created[0].insertId, isParameters:0, isGoal:0, u_type:"Coach"}
+                
             return res.status(201).json({
                 success:true,
                 message: "Register successful",

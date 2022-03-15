@@ -1,5 +1,108 @@
 const Ingredients = require('../model/ingredients');
 
+exports.findByID = async(req, res) => {
+    try{
+        const id = req.params.id; 
+        const [ingredient] = await Ingredients.ingredientByID(id);
+        
+        if(ingredient.length == 0){
+            return res.status(400).json({
+                success:false,
+                message: "No ingredients to show",
+            });   
+        }
+
+        res.status(400).json({
+            success:true,
+            message: "ingredient",
+            ingredients: ingredient[0]            
+        }); 
+
+    }catch(error){
+        res.status(500).json({
+            success: false,
+            message: error.message
+        })        
+    }
+}
+
+exports.findByCategory= async(req, res) => {
+    try{
+        const category = req.params.category; 
+        const [ingredients] = await Ingredients.ingredientByCategory(category);
+        
+        if(ingredients.length == 0){
+            return res.status(400).json({
+                success:false,
+                message: "No ingredients to show",
+            });   
+        }
+
+        res.status(400).json({
+            success:true,
+            message: "ingredients",
+            ingredients: ingredients            
+        }); 
+
+    }catch(error){
+        res.status(500).json({
+            success: false,
+            message: error.message
+        })        
+    }
+}
+
+exports.addIngredient = async(req, res) => {
+    try{
+        const ingredient = req.body;
+        if(ingredient.category == null || ingredient.name == null || ingredient.price == null || ingredient.calories == null || ingredient.weight == null)
+            return res.status(400).json({
+                success:false,
+                message: "Must fill all fiels",
+            });
+
+        const added = await Ingredients.addIngredient(ingredient.category, ingredient.name, ingredient.price, ingredient.calories, ingredient.weight);
+        
+        if(added){
+            return res.status(201).json({
+                success:true,
+                message: "ingredients added successful",
+            });   
+        }else
+            res.status(500).json({message:"Server Error 2"})
+            
+    }catch (error) {
+        res.status(500).json({
+            success:false,
+            message:error.message
+        })
+    }
+}
+
+exports.showIngredients = async(req, res) =>{
+    try{
+        const [ingredients] = await Ingredients.allIngredients();
+        
+        if(ingredients.length == 0){
+            return res.status(400).json({
+                success:false,
+                message: "No ingredients to show",
+            });   
+        }
+
+        res.status(400).json({
+            success:true,
+            message: "ingredients",
+            ingredients: ingredients            
+        }); 
+    }catch (error) {
+        res.status(500).json({
+            success:false,
+            message:error.message
+        })
+    }
+}
+
 exports.addCategory = async(req, res) => {
     try{
         const category = req.body;
@@ -14,7 +117,7 @@ exports.addCategory = async(req, res) => {
         if(added){
             return res.status(201).json({
                 success:true,
-                message: "Parameters added successful",
+                message: "category added successful",
             });   
         }else
             res.status(500).json({message:"Server Error 2"})
