@@ -1,8 +1,15 @@
 const express = require('express');
 const router = express.Router();
 
-const {findByID, findByCategory, addIngredient, showIngredients, addCategory, showCategories} = require('../controllers/ingredients');
 const {isAuthenticated} = require('../middleware/userAuth');
+const {
+    findByID, 
+    findByCategory, 
+    addIngredient, 
+    showIngredients, 
+    addCategory, 
+    showCategories
+} = require('../controllers/ingredients');
 
 router.route('/ingredients/id/:id').get(isAuthenticated, findByID);
 router.route('/ingredients/category/:category').get(isAuthenticated, findByCategory);

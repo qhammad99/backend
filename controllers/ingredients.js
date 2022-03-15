@@ -66,7 +66,7 @@ exports.addIngredient = async(req, res) => {
         if(added){
             return res.status(201).json({
                 success:true,
-                message: "ingredients added successful",
+                message: "ingredient added successful",
             });   
         }else
             res.status(500).json({message:"Server Error 2"})
