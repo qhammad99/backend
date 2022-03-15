@@ -1,5 +1,4 @@
 const express = require('express');
-
 const router = express.Router();
 
 const {add, total, current, findGoal, updateStatus} = require('../controllers/goal.js');
