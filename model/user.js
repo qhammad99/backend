@@ -10,8 +10,18 @@ module.exports = class userInfo{
     }
 
     static findUser(email){
-        return db.execute(`SELECT user.user_id, user.name, user.email, user.password, user.isParameters, user.isGoal, user_type.u_type as u_type FROM user 
-        JOIN user_type ON user.u_type = user_type.id WHERE email=(?)`, [email]);
+        return db.execute(`SELECT 
+            user.user_id, 
+            user.name, 
+            user.email, 
+            user.password, 
+            user.isParameters, 
+            user.isGoal, 
+            user_type.u_type as u_type 
+            
+            FROM user 
+            JOIN user_type ON user.u_type = user_type.id 
+            WHERE email=(?)`, [email]);
     }
 
     static findById(id){

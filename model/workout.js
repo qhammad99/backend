@@ -2,8 +2,16 @@ const db = require('../config/database');
 
 module.exports= class workoutCategory{
     static workoutByID(id){
-        return db.execute(`SELECT workouts.id, workouts.name, workouts.number_of_sets, workouts.repititions, workouts.calorie, workout_category.name AS category
-        FROM workouts JOIN workout_category ON workouts.category = workout_category.id WHERE workouts.id = ?`, [id]);
+        return db.execute(`SELECT 
+            workouts.id, 
+            workouts.name, 
+            workouts.number_of_sets, 
+            workouts.repititions, 
+            workouts.calorie, workout_category.name AS category
+            
+            FROM workouts 
+            JOIN workout_category ON workouts.category = workout_category.id 
+            WHERE workouts.id = ?`, [id]);
     }
 
     static workoutByCategory(category){
@@ -17,8 +25,16 @@ module.exports= class workoutCategory{
     }
 
     static allWorkouts(){
-        return db.execute(`SELECT workouts.id, workouts.name, workouts.number_of_sets, workouts.repititions, workouts.calorie, workout_category.name AS category
-        FROM workouts JOIN workout_category ON workouts.category = workout_category.id`);
+        return db.execute(`SELECT 
+            workouts.id, 
+            workouts.name, 
+            workouts.number_of_sets, 
+            workouts.repititions, 
+            workouts.calorie,
+            workout_category.name AS category
+        
+            FROM workouts 
+            JOIN workout_category ON workouts.category = workout_category.id`);
     }
 
     static addCategory(name){
