@@ -14,6 +14,20 @@ exports.add = async (req, res) => {
         const added = await Goal.addGoal(user[0].user_id, goal.duration_type, goal.duration_value, goal.target_type, goal.target_value);
         
         if(added){
+
+            // copy schedule and relevant diets and workouts
+            const [schedule] = await Goal.copySchedule(user[0].user_id);
+            const [scheduleIDdiets] = await Goal.copyScheduleIDdiet(user[0].user_id);
+            const [dietID]= await Goal.updateDietID();
+            const [scheduleIDworkout] = await Goal.copyScheduleIDworkout(user[0].user_id);
+            const [workoutID]= await Goal.updateWorkoutID();
+            if(!schedule || !scheduleIDdiets || !dietID || !scheduleIDworkout || !workoutID){
+                return res.status(400).json({
+                    success: false,
+                    message: "not able to generate schedule"
+                })
+            }
+
             // update the isGoal flag in user table
             const update = await Goal.goalFlag(user[0].user_id, 1);
             if(update[0].affectedRows >0)
