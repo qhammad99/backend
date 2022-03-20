@@ -70,7 +70,7 @@ exports.addRecipie = async(req, res) => {
 
             const ingredientsAdded = await Recipies.attachIngredients(ingredients);
             if(ingredientsAdded)
-                res.status(200).json({
+                return res.status(200).json({
                     success: true,
                     message: "Recipie added"
                 })
@@ -131,74 +131,6 @@ exports.recipiesByUserID = async(req, res) => {
     }catch(error){
         res.status(500).json({
             success:false,
-            message: error.message
-        })
-    }
-}
-
-exports.renameRecipie = async(req, res) => {
-    // only update name because if we change ingredients then it will effect the progress.
-    try{
-        const [user] = req.user;
-        const recipie = req.body;
-
-        if(recipie.name == null)
-        {
-            return res.status(400).json({
-                success:false,
-                message: "Not shared name to update",
-            });
-        }
-
-        // get recipie detail -- or -- check recipie exist or not
-        const [getRecipie] = await Recipies.recipieByID(recipie.recipie_id);
-        if(getRecipie.length == 0)
-            return res.status(401).json({
-                status:false,
-                message: "recipie not found"
-            });
-
-        // if general recipie then add it for user first and new name of it
-        if(getRecipie[0].user_id == 1 && user[0].user_id != 1){
-            const added = await Recipies.addRecipie(user[0].user_id, recipie.name, getRecipie[0].calorie);
-            if(added){
-                const recipieId = added[0].insertId;
-
-                const [ingredients] = await Recipies.getIngredients(recipie.recipie_id);
-                if (!ingredients.length == 0) {
-                    const addIngredients = ingredients.map(ingredient =>[ingredient.id, recipieId, ingredient.qty]);
-                    const ingredientsAdded = await Recipies.attachIngredients(addIngredients);
-                    if(!ingredientsAdded)
-                        return res.status(500).json({
-                            success: false,
-                            message: "ingredients Not added"
-                        })
-                }
-            }
-        }
-
-        if(user[0].user_id != getRecipie[0].user_id){
-            return res.status(401).json({
-                success:false,
-                message: "can't rename recipie of others"
-            });
-        }
-        
-        const rename = await Recipies.updateName(recipie.recipie_id, recipie.name);
-        if(rename[0].affectedRows == 0){
-            return res.status(401).json({
-                success:false,
-                message: "recipie not renamed"
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            message: "renamed"
-        });
-    }catch(error){
-        res.status(500).json({
-            success: false,
             message: error.message
         })
     }

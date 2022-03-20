@@ -13,10 +13,6 @@ module.exports = class Recipies{
         return db.execute(`SELECT * FROM recipie WHERE user_id = ?`, [user_id]);
     }
 
-    static updateName(recipie_id, name){
-        return db.execute(`UPDATE recipie SET name = ? WHERE recipie_id = ?`, [name, recipie_id])
-    }
-
     static recipieByID(recipie_id){
         return db.execute(`SELECT * FROM recipie WHERE recipie_id = ?`, [recipie_id]);
     }
