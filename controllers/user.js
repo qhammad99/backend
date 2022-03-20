@@ -91,7 +91,7 @@ exports.update = async(req, res) => {
                 message: "Not shared data to update",
         });
 
-        if(!userObj.email == null || !userObj.password == null || !userObj.name == null)
+        if(userObj.email == null || userObj.password == null || userObj.name == null)
             return res.status(400).json({
                 success:false,
                 message: "Please don't pass empty fields",

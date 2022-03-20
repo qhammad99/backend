@@ -63,3 +63,128 @@ exports.scheduleByDay = async(req, res) => {
         })
     }
 }
+
+exports.addSchedule = async(req, res) => {
+    try{
+        const [user] = req.user;
+        const schedule = req.body;
+        
+        // check null
+        if(schedule.day_no == null || schedule.start_time == null 
+            || schedule.finish_time == null || schedule.category == null 
+            || (schedule.diet_id == null && schedule.workout_plan_id == null)
+            ){
+            return res.status(500).json({
+                success: false,
+                message: "empty fields not allowed"
+            });
+        }
+
+        const addedSchedule = await Schedule.addSchedule(user[0].user_id, schedule.day_no, schedule.start_time,
+            schedule.finish_time, schedule.category);
+
+        if(addedSchedule){
+            const scheduleID = addedSchedule[0].insertId;
+
+            if(schedule.diet_id == null){
+                // add workout_plan_id
+                const workoutAdd = await Schedule.attachWorkout(scheduleID, schedule.workout_plan_id);
+                if(!workoutAdd){
+                    await removeSchedule(scheduleID);
+                    return res.status(401).json({
+                        status: false,
+                        message: "can't add schedule"
+                    })
+                }
+            }
+
+            if(schedule.workout_plan_id == null){
+                // add diet_id
+                const dietAdd = await Schedule.attachDiet(scheduleID, schedule.diet_id);
+                if(!dietAdd){
+                    await removeSchedule(scheduleID);
+                    return res.status(401).json({
+                        status: false,
+                        message: "can't add schedule"
+                    })
+                }
+            }
+            return res.status(200).json({
+                success: true,
+                message: "schedule added"
+            })
+        }
+
+        res.status(500).json({
+            success: false,
+            message: "Not added"
+        })
+    }catch(error){
+        res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
+exports.deleteSchedule = async(req, res) => {
+    try{
+        const [user] = req.user;
+        const scheduleID = req.params.id;
+
+        // delete workout
+        await Schedule.removeWorkout(scheduleID);
+
+        // delete diet
+        await Schedule.removeDiet(scheduleID);
+
+        const deletedSchedule = await Schedule.removeSchedule(scheduleID);
+
+        if(deletedSchedule[0].affectedRows > 0){
+            return res.status(200).json({
+                success: true,
+                message: "schedule deleted"
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: "Not deleted"
+        });
+    }catch(error){
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+exports.updateTime = async(req, res) => {
+    try{
+        const schedule = req.body;
+
+        if(schedule.schedule_id == null && schedule.start_time == null && schedule.finish_time == null)
+            return res.status(401).json({
+                success: false,
+                message: "can't update with empty fields"
+            })
+
+        let updated = await Schedule.updateTime(schedule.schedule_id, schedule.start_time, schedule.finish_time);
+        if(updated[0].affectedRows >0)
+            return res.status(200).json({
+                success: true,
+                message: "updated successfully"
+            })
+
+        res.status(401).json({
+            success: false,
+            message: "can't update"
+        })
+
+    }catch(error){
+        res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
