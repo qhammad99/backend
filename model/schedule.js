@@ -1,7 +1,7 @@
 const db = require('../config/database');
 
 module.exports = class Schedule{
-    static scheduleByDay(user_id, dayNumber){
+    static scheduleByDay(user_id, dayNumber, goal_id, date){
         return db.execute(`SELECT * FROM(
             (
                 SELECT schedule.schedule_id, schedule.start_time, schedule.finish_time, schedule.category,
@@ -22,9 +22,31 @@ module.exports = class Schedule{
                     JOIN workout_plan     ON workout_plan.workout_plan_id = workout_schedule.workout_plan_id
                 WHERE schedule.user_id = ? AND schedule.day_no = ?
             )
+                UNION
+                (
+                    SELECT 'Done' as schedule_id, diet_progress.start_time, diet_progress.finish_time,
+                    'Diet' as category,
+                    diet_plan.diet_id as dietID, diet_plan.name as dietName, 
+                    NULL as workoutID, NULL as workoutName 
+                    FROM diet_progress
+                        JOIN progress ON diet_progress.progress_id = progress.id
+                        JOIN diet_plan     ON diet_plan.diet_id = diet_progress.diet_id
+                    WHERE progress.goal_id = ? AND progress.day_date = ?
+                )        
+                    UNION
+                (
+                    SELECT'Done' as schedule_id, workout_progress.start_time, workout_progress.finish_time,
+                    'Workout' as category,
+                    NULL as dietID, NULL as dietName,
+                    workout_plan.workout_plan_id as workoutID, workout_plan.name as workoutName 
+                    FROM workout_progress
+                        JOIN progress ON workout_progress.progress_id = progress.id
+                        JOIN workout_plan     ON workout_plan.workout_plan_id = workout_progress.workout_plan_id
+                    WHERE progress.goal_id = ? AND progress.day_date = ?
+                )
         ) AS task
             order by task.start_time`
-        , [user_id, dayNumber, user_id, dayNumber]);
+        , [user_id, dayNumber, user_id, dayNumber, goal_id, date, goal_id, date]);
     }
 
     static addSchedule(user_id, day_no, start_time, finish_time, category){

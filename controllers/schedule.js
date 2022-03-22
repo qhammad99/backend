@@ -3,13 +3,23 @@ const Schedule = require('../model/schedule');
 exports.todaySchedule = async(req, res) => {
     try{
         const[user] = req.user;
+        const goal = req.body;
+
         const DAY ={ "Sun": 1, "Mon": 2, "Tue": 3, "Wed": 4, "Thu": 5, "Fri": 6, "Sat": 7 };
+        const MONTH ={ 
+            "Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, 
+            "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12
+        };
 
         const todayPK = new Date().toString(); // convert to local time but sending string
         const dayString = todayPK.substring(0, 3);
         const dayNumber = DAY[dayString];
+        const currentMonth = ('0' + MONTH[todayPK.substring(4, 7)]).slice(-2);  // add 0 at start if less than 10
+        const currentDate = ('0' + todayPK.substring(8, 10)).slice(-2);
+        const currentYear = todayPK.substring(11, 15);
+        const todayDate = currentYear + "-" + currentMonth + "-" + currentDate;
 
-        const [schedules] = await Schedule.scheduleByDay(user[0].user_id, dayNumber);
+        const [schedules] = await Schedule.scheduleByDay(user[0].user_id, dayNumber, goal.goal_id, todayDate);
         if(schedules.length==0){
             return res.status(401).json({
                 success: false,
