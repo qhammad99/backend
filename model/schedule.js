@@ -6,7 +6,8 @@ module.exports = class Schedule{
             (
                 SELECT schedule.schedule_id, schedule.start_time, schedule.finish_time, schedule.category,
                 diet_plan.diet_id as dietID, diet_plan.name as dietName, 
-                NULL as workoutID, NULL as workoutName 
+                NULL as workoutID, NULL as workoutName,
+                NULL AS extraID, NULL AS extraName  
                 FROM schedule
                     JOIN diet_schedule ON diet_schedule.schedule_id = schedule.schedule_id
                     JOIN diet_plan     ON diet_plan.diet_id = diet_schedule.diet_id
@@ -16,7 +17,8 @@ module.exports = class Schedule{
             (
                 SELECT schedule.schedule_id, schedule.start_time, schedule.finish_time, schedule.category,
                 NULL as dietID, NULL as dietName,
-                workout_plan.workout_plan_id as workoutID, workout_plan.name as workoutName 
+                workout_plan.workout_plan_id as workoutID, workout_plan.name as workoutName,
+                NULL AS extraID, NULL AS extraName  
                 FROM schedule
                     JOIN workout_schedule ON workout_schedule.schedule_id = schedule.schedule_id
                     JOIN workout_plan     ON workout_plan.workout_plan_id = workout_schedule.workout_plan_id
@@ -27,7 +29,8 @@ module.exports = class Schedule{
                     SELECT 'Done' as schedule_id, diet_progress.start_time, diet_progress.finish_time,
                     'Diet' as category,
                     diet_plan.diet_id as dietID, diet_plan.name as dietName, 
-                    NULL as workoutID, NULL as workoutName 
+                    NULL as workoutID, NULL as workoutName,
+                    NULL AS extraID, NULL AS extraName  
                     FROM diet_progress
                         JOIN progress ON diet_progress.progress_id = progress.id
                         JOIN diet_plan     ON diet_plan.diet_id = diet_progress.diet_id
@@ -35,23 +38,36 @@ module.exports = class Schedule{
                 )        
                     UNION
                 (
-                    SELECT'Done' as schedule_id, workout_progress.start_time, workout_progress.finish_time,
+                    SELECT 'Done' as schedule_id, workout_progress.start_time, workout_progress.finish_time,
                     'Workout' as category,
                     NULL as dietID, NULL as dietName,
-                    workout_plan.workout_plan_id as workoutID, workout_plan.name as workoutName 
+                    workout_plan.workout_plan_id as workoutID, workout_plan.name as workoutName,
+                    NULL AS extraID, NULL AS extraName  
                     FROM workout_progress
                         JOIN progress ON workout_progress.progress_id = progress.id
                         JOIN workout_plan     ON workout_plan.workout_plan_id = workout_progress.workout_plan_id
                     WHERE progress.goal_id = ? AND progress.day_date = ?
                 )
+                    UNION
+                (
+                    SELECT 'Extra' as schedule_id, NULL AS start_time, NULL AS finish_time,
+                    extra_task.category AS category,
+                    NULL AS dietID, NULL AS dietName,
+                    NULL AS workoutID, NULL AS workoutName,
+                    extra_task.id AS extraID, extra_task.name AS extraName 
+                    FROM extra_progress
+                        JOIN progress ON extra_progress.progress_id = progress.id
+                        JOIN extra_task ON extra_task.id = extra_progress.extra_id
+                    WHERE progress.goal_id = ? AND progress.day_date = ?
+                )
         ) AS task
             order by task.start_time`
-        , [user_id, dayNumber, user_id, dayNumber, goal_id, date, goal_id, date]);
+        , [user_id, dayNumber, user_id, dayNumber, goal_id, date, goal_id, date, goal_id, date]);
     }
 
-    static addSchedule(user_id, day_no, start_time, finish_time, category){
-        return db.execute(`INSERT INTO schedule (user_id, day_no, start_time, finish_time, category) 
-        VALUES (?, ?, ?, ?, ?)`, [user_id, day_no, start_time, finish_time, category]);
+    static addSchedule(user_id, day_no, start_time, finish_time, category, level){
+        return db.execute(`INSERT INTO schedule (user_id, day_no, start_time, finish_time, category, level) 
+        VALUES (?, ?, ?, ?, ?, ?)`, [user_id, day_no, start_time, finish_time, category, level]);
     }
 
     static removeSchedule(schedule_id){  //unlinked with other tables

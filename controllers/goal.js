@@ -5,13 +5,13 @@ exports.add = async (req, res) => {
         const [user]= req.user;
         const goal = req.body;
 
-        if(goal.duration_type == null || goal.duration_value == null || goal.target_type == null || goal.target_value == null)
+        if(goal.start_date == null || goal.number_of_days == null || goal.target_type == null || goal.target_value == null)
             return res.status(400).json({
                 success:false,
                 message: "Please Fill all Fields",
             });
         
-        const added = await Goal.addGoal(user[0].user_id, goal.duration_type, goal.duration_value, goal.target_type, goal.target_value);
+        const added = await Goal.addGoal(user[0].user_id, goal.start_date, goal.number_of_days, goal.target_type, goal.target_value);
         
         if(added){
 

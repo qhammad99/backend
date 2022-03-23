@@ -1,9 +1,9 @@
 const db = require('../config/database.js');
 
 module.exports = class userGoal{
-    static addGoal(user_id, duration_type, duration_value, target_type, target_value){
-        return db.execute(`INSERT INTO goal (user_id, duration_type, duration_value, target_type, target_value) VALUES (?, ?, ?, ?, ?)`, 
-        [user_id, duration_type, duration_value, target_type, target_value]);
+    static addGoal(user_id, start_date, number_of_days, target_type, target_value){
+        return db.execute(`INSERT INTO goal (user_id, start_date, number_of_days, target_type, target_value) VALUES (?, ?, ?, ?, ?)`, 
+        [user_id, start_date, number_of_days, target_type, target_value]);
     }
 
     static goalFlag(id, flag){

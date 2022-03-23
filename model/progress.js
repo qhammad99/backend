@@ -7,7 +7,8 @@ module.exports = class Progress{
                 SELECT diet_progress.start_time, diet_progress.finish_time,
                 'Diet' AS category,
                 diet_plan.diet_id AS dietID, diet_plan.name AS dietName, 
-                NULL AS workoutID, NULL AS workoutName 
+                NULL AS workoutID, NULL AS workoutName,
+                NULL AS extraID, NULL AS extraName 
                 FROM diet_progress
                     JOIN progress ON diet_progress.progress_id = progress.id
                     JOIN diet_plan     ON diet_plan.diet_id = diet_progress.diet_id
@@ -18,16 +19,28 @@ module.exports = class Progress{
                 SELECT workout_progress.start_time, workout_progress.finish_time,
                 'Workout' AS category,
                 NULL AS dietID, NULL AS dietName,
-                workout_plan.workout_plan_id AS workoutID, workout_plan.name AS workoutName 
+                workout_plan.workout_plan_id AS workoutID, workout_plan.name AS workoutName,
+                NULL AS extraID, NULL AS extraName 
                 FROM workout_progress
                     JOIN progress ON workout_progress.progress_id = progress.id
                     JOIN workout_plan     ON workout_plan.workout_plan_id = workout_progress.workout_plan_id
                 WHERE progress.id = ?
             )
+                UNION
+            (
+                SELECT NULL AS start_time, NULL AS finish_time,
+                extra_task.category AS category,
+                NULL AS dietID, NULL AS dietName,
+                NULL AS workoutID, NULL AS workoutName,
+                extra_task.id AS extraID, extra_task.name AS extraName 
+                FROM extra_progress
+                    JOIN progress ON extra_progress.progress_id = progress.id
+                    JOIN extra_task ON extra_task.id = extra_progress.extra_id
+                WHERE progress.id = ?
+            )
         ) AS task
-            order by task.start_time`, [id, id]);
+            order by task.start_time`, [id, id, id]);
     }
-
 
     static getByDate(date){
         return db.execute(`SELECT * FROM progress WHERE day_date = ?`, [date]);
@@ -49,6 +62,14 @@ module.exports = class Progress{
 
     static updateCalorieGain(calorie, progress_id){
         return db.execute(`UPDATE progress SET calories_gain = ? WHERE id = ?`, [calorie, progress_id]);
+    }
+
+    static addExtra(name, category, calories){
+        return db.execute(`INSERT INTO extra_task (name, category, calories) VALUES (?, ?, ?)`, [name, category, calories]);
+    }
+
+    static attachExtra(progress_id, extra_id){
+        return db.execute(`INSERT INTO extra_progress VALUES (?, ?)`, [progress_id, extra_id]);
     }
 
     static attachWorkout(progress_id, workout_plan_id, start_time, finish_time){

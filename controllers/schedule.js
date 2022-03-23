@@ -90,8 +90,13 @@ exports.addSchedule = async(req, res) => {
             });
         }
 
-        const addedSchedule = await Schedule.addSchedule(user[0].user_id, schedule.day_no, schedule.start_time,
-            schedule.finish_time, schedule.category);
+        let addedSchedule;
+        if(schedule.level == null)
+            addedSchedule = await Schedule.addSchedule(user[0].user_id, schedule.day_no, schedule.start_time,
+            schedule.finish_time, schedule.category, null);
+        else 
+            addedSchedule = await Schedule.addSchedule(user[0].user_id, schedule.day_no, schedule.start_time,
+            schedule.finish_time, schedule.category, schedule.level);
 
         if(addedSchedule){
             const scheduleID = addedSchedule[0].insertId;
