@@ -7,4 +7,9 @@ const connection = mysql.createPool({
   database : process.env.DATABASE
 });
 
+// --- to check errors
+// connection.getConnection(function(err, connection) {
+//   console.log(err, connection);
+// }); 
+
 module.exports = connection.promise();
