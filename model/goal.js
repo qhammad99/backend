@@ -22,12 +22,16 @@ module.exports = class userGoal{
         return db.execute( `SELECT * FROM goal WHERE user_id = ? AND status = ?`, [user_id, 'inProgress']);
     }
 
+    static findGoal(goal_id){
+        return db.execute( `SELECT * FROM goal WHERE id = ?`, [goal_id]);
+    }
+
     static updateStatus(goalID){
         return db.execute(`UPDATE goal SET status= ? WHERE id = ?`, ['completed', goalID]);
     }
 
     static completedGoal(user_id){
-        return db.execute(`SELECT COUNT(*) AS GOALS FROM goal WHERE status = ?`, ['completed']);
+        return db.execute(`SELECT COUNT(*) AS GOALS FROM goal WHERE status = ? AND user_id = ?`, ['completed', user_id]);
     }
 
     static copySchedule(user_id){
