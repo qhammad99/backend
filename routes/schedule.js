@@ -10,7 +10,7 @@ const {
     updateTime
 } = require('../controllers/schedule');
 
-router.route('/schedule-today').get(isAuthenticated, todaySchedule);  // today schedule  // progress table not joined till
+router.route('/schedule-today').post(isAuthenticated, todaySchedule);  // today schedule  // progress table not joined till
 router.route('/schedule/day/:day').get(isAuthenticated, scheduleByDay);  // schedule by day
 router.route('/schedule-add').post(isAuthenticated, addSchedule);  // add schedule
 router.route('/schedule-delete/:id').delete(isAuthenticated, deleteSchedule);  // delete schedule
