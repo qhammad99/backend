@@ -2,13 +2,14 @@ const Progress = require('../model/progress');
 
 exports.progressTasks = async(req, res) => {
     try{
-        const id = req.params.id;
+        const goal = req.params.goal;
+        const day = req.params.day;
 
-        const [tasks] = await Progress.tasksDetails(id);
+        const [tasks] = await Progress.tasksDetails(goal, day);
         if(tasks.length==0){
-            return res.status(401).json({
+            return res.status(200).json({
                 success: false,
-                message: "no tasks for progress"
+                message: "no tasks"
             })
         }
         
@@ -33,7 +34,7 @@ exports.findByDay = async(req, res) => {
 
         const [progress] = await Progress.findByDay(goal_id, day_no);
         if(progress.length == 0){
-            return res.status(401).json({
+            return res.status(200).json({
                 success: false,
                 message: "No progress found"
             });
@@ -339,5 +340,30 @@ exports.attachExtra = async(req, res) => {
             success: false,
             message: error.message
         })
+    }
+}
+
+exports.getByGoal = async(req, res) => {
+    try{
+        const goal_id = req.params.goal;
+
+        const [progress] = await Progress.findByGoal(goal_id);
+        if(progress.length == 0){
+            return res.status(200).json({
+                success: false,
+                message: "No progress found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Progress By Day Goal",
+            progress: progress
+        });
+    }catch(error){
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
 }

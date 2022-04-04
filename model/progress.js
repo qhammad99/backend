@@ -1,7 +1,7 @@
 const db = require('../config/database');
 
 module.exports = class Progress{
-    static tasksDetails(id){
+    static tasksDetails(goal_id, day_no){
         return db.execute(`SELECT * FROM(
             (
                 SELECT diet_progress.start_time, diet_progress.finish_time,
@@ -12,7 +12,7 @@ module.exports = class Progress{
                 FROM diet_progress
                     JOIN progress ON diet_progress.progress_id = progress.id
                     JOIN diet_plan     ON diet_plan.diet_id = diet_progress.diet_id
-                WHERE progress.id = ?
+                WHERE progress.goal_id = ? AND progress.day_no = ?
             )        
                 UNION
             (
@@ -24,7 +24,7 @@ module.exports = class Progress{
                 FROM workout_progress
                     JOIN progress ON workout_progress.progress_id = progress.id
                     JOIN workout_plan     ON workout_plan.workout_plan_id = workout_progress.workout_plan_id
-                WHERE progress.id = ?
+                WHERE progress.goal_id = ? AND progress.day_no = ?
             )
                 UNION
             (
@@ -36,10 +36,10 @@ module.exports = class Progress{
                 FROM extra_progress
                     JOIN progress ON extra_progress.progress_id = progress.id
                     JOIN extra_task ON extra_task.id = extra_progress.extra_id
-                WHERE progress.id = ?
+                WHERE progress.goal_id = ? AND progress.day_no = ?
             )
         ) AS task
-            order by task.start_time`, [id, id, id]);
+            order by task.start_time`, [goal_id, day_no, goal_id, day_no, goal_id, day_no]);
     }
 
     static getByDate(date){
@@ -84,6 +84,10 @@ module.exports = class Progress{
 
     static findByDay(goal_id, day_no){
         return db.execute(`SELECT * FROM progress WHERE goal_id = ? AND day_no = ?`, [goal_id, day_no]);
+    }
+
+    static findByGoal(goal_id){
+        return db.execute(`SELECT * FROM progress WHERE goal_id = ? ORDER BY day_date`, [goal_id]);
     }
 
     static findByDate(goal_id, date){

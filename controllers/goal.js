@@ -118,7 +118,7 @@ exports.total = async(req, res) => {
 }
 
 exports.current = async(req, res) => {
-    // completed goal count
+    // inProgress goal of that user
     try {
         const [user]= req.user;
         const [total] = await Goal.currentGoal(user[0].user_id);
@@ -145,22 +145,22 @@ exports.current = async(req, res) => {
 }
 
 exports.findGoal = async(req, res) => {
-    // completed goal count
+    //  goal detail by goal id
     try {
         const id = req.params.id;
-        const [total] = await Goal.currentGoal(id);
+        const [goal] = await Goal.findGoal(id);
         
-        if(total.length == 0){
+        if(goal.length == 0){
             return res.status(401).json({
                 success:false,
-                message: "No current goal of that user"
+                message: "No goal found for that goal_id"
             });   
         }
         
         res.status(200).json({
             success:true,
-            message:"current goal of that user",
-            goal: total[0]
+            message:"goal with goal id",
+            goal: goal[0]
         })
         
     } catch (error) {

@@ -19,9 +19,9 @@ exports.todaySchedule = async(req, res) => {
         const currentYear = todayPK.substring(11, 15);
         const todayDate = currentYear + "-" + currentMonth + "-" + currentDate;
 
-        const [schedules] = await Schedule.scheduleByDay(user[0].user_id, dayNumber, goal.goal_id, todayDate);
+        const [schedules] = await Schedule.scheduleToday(user[0].user_id, dayNumber, goal.goal_id, todayDate);
         if(schedules.length==0){
-            return res.status(401).json({
+            return res.status(200).json({
                 success: false,
                 message: "rest day"
             })
@@ -55,7 +55,7 @@ exports.scheduleByDay = async(req, res) => {
 
         const [schedules] = await Schedule.scheduleByDay(user[0].user_id, dayNumber);
         if(schedules.length==0){
-            return res.status(401).json({
+            return res.status(200).json({
                 success: false,
                 message: "rest day"
             })
