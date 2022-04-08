@@ -75,7 +75,7 @@ module.exports = class Schedule{
             )
                 
         ) AS task WHERE task.calories IS NOT null
-            GROUP BY task.dietID, task.workoutID
+            GROUP BY task.dietID, task.workoutID, task.extraID
             ORDER BY task.start_time`
         , [goal_id, date, goal_id, date, goal_id, date, user_id, dayNumber, user_id, dayNumber]);
     }
