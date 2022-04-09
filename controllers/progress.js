@@ -313,7 +313,7 @@ exports.attachExtra = async(req, res) => {
                 add = await Progress.addProgressWorkout(extra.goal_id, extra.day_no, todayDate, caloriesBurn);
             }else{
                 let caloriesGain = parseInt(extra.calories);
-                const add = await Progress.addProgressDiet(extra.goal_id, extra.day_no, todayDate, caloriesGain);
+                add = await Progress.addProgressDiet(extra.goal_id, extra.day_no, todayDate, caloriesGain);
             }
             
             if(!add){
