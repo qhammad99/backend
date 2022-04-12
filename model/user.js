@@ -5,8 +5,8 @@ const bcrypt = require('bcrypt');
 module.exports = class userInfo{
     static async createUser(name, email, password, u_type){
         let hashPassword = await bcrypt.hash(password, 10);
-        return db.execute(`INSERT INTO user (name, email, password, u_type) VALUES (?, ?, ?, ?)`, 
-        [name, email, hashPassword, u_type]);
+        return db.execute(`INSERT INTO user (name, email, password, u_type, img_file) VALUES (?, ?, ?, ?, ?)`, 
+        [name, email, hashPassword, u_type, 'userAvatar.png']);
     }
 
     static findUser(email){
@@ -36,5 +36,9 @@ module.exports = class userInfo{
     static async updatePassword(id, password){
         let hashPassword = await bcrypt.hash(password, 10);
         return db.execute(`UPDATE user SET password= ? WHERE user_id = ?`, [hashPassword, id]);
+    }
+
+    static updatePhoto(id, image){
+        return db.execute(`UPDATE user SET img_file= ? WHERE user_id = ?`, [image, id]);
     }
 };

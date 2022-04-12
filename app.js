@@ -15,6 +15,7 @@ const dietPlan = require('./routes/dietPlan');
 const workoutPlan = require('./routes/workoutPlan');
 const progress = require('./routes/progress');
 
+app.use('/api/v1/public', express.static('public'));
 app.use('/api/v1', user);
 app.use('/api/v1', parameters);
 app.use('/api/v1', goal);

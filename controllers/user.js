@@ -57,9 +57,9 @@ exports.register = async (req, res) => {
             const token = await User.generateToken(created[0].insertId);
             let userObj;
             if(user.u_type = 1)
-                userObj = {...user, user_id: created[0].insertId, isParameters:0, isGoal:0, u_type:"User"}
+                userObj = {...user, user_id: created[0].insertId, isParameters:0, isGoal:0, u_type:"User", img_file:"userAvatar.png"}
             else
-                userObj = {...user, user_id: created[0].insertId, isParameters:0, isGoal:0, u_type:"Coach"}
+                userObj = {...user, user_id: created[0].insertId, isParameters:0, isGoal:0, u_type:"Coach", img_file:"userAvatar.png"}
                 
             return res.status(201).json({
                 success:true,
@@ -123,6 +123,39 @@ exports.update = async(req, res) => {
         res.status(200).json({
             success:true,
             message:"updated successfully"
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            success:false,
+            message:error.message,
+        })
+    }
+
+}
+
+exports.updatePhoto = async(req, res) => {
+    try {
+        const [user]= req.user;
+        let updated; // to check is any row affected by update or not
+        if(!req.file)
+            return res.status(400).json({
+                success:false,
+                message: "Not shared photo to update",
+            });
+        
+        updated = await User.updatePhoto(user[0].user_id, req.file.filename);
+        
+        if(updated[0].affectedRows == 0)
+            return res.status(401).json({
+                success:false,
+                message: "User not found"
+            });
+
+        res.status(200).json({
+            success:true,
+            message:"updated successfully",
+            url: req.file.filename
         })
 
     } catch (error) {
