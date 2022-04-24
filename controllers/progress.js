@@ -104,7 +104,7 @@ exports.attachDiet = async(req, res) => {
         const todayDate = currentYear + "-" + currentMonth + "-" + currentDate;
 
         // check if progress table has today record then get id of it and attach diet with junction table
-        const [check] = await Progress.getByDate(todayDate);
+        const [check] = await Progress.getByDate(todayDate, diet.goal_id);
         if(check.length > 0){
             let caloriesGain = parseInt(check[0].calories_gain);
             caloriesGain = caloriesGain + parseInt(diet.calories);
@@ -183,7 +183,7 @@ exports.attachWorkout = async(req, res) => {
         const todayDate = currentYear + "-" + currentMonth + "-" + currentDate;
 
         // check if progress table has today record then get id of it and attach workout with junction table
-        const [check] = await Progress.getByDate(todayDate);
+        const [check] = await Progress.getByDate(todayDate, workout.goal_id);
         if(check.length > 0){
             let caloriesBurn = parseInt(check[0].calories_burn);
             caloriesBurn = caloriesBurn + parseInt(workout.calories);
@@ -271,7 +271,7 @@ exports.attachExtra = async(req, res) => {
         }
 
         // check if progress table has today record then get id of it and attach workout with junction table
-        const [check] = await Progress.getByDate(todayDate);
+        const [check] = await Progress.getByDate(todayDate, extra.goal_id);
         if(check.length > 0){
             let update;
 
