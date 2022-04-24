@@ -42,8 +42,8 @@ module.exports = class Progress{
             order by task.start_time`, [goal_id, day_no, goal_id, day_no, goal_id, day_no]);
     }
 
-    static getByDate(date){
-        return db.execute(`SELECT * FROM progress WHERE day_date = ?`, [date]);
+    static getByDate(date, goal_id){
+        return db.execute(`SELECT * FROM progress WHERE day_date = ? AND goal_id = ?`, [date, goal_id]);
     }
 
     static addProgressWorkout(goal_id, day_no, day_date, calories_burn){
