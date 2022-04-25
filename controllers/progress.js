@@ -246,7 +246,7 @@ exports.attachExtra = async(req, res) => {
             "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12
         };
 
-        if(extra.name == null || extra.calories == null ||
+        if(extra.name == null || extra.calories == null || extra.start_time == null ||
             extra.category == null || extra.goal_id == null || extra.day_no == null){
 
             return res.status(500).json({
@@ -297,7 +297,7 @@ exports.attachExtra = async(req, res) => {
                 })
             
             else{
-                const added = await Progress.attachExtra(check[0].id, addExtra[0].insertId);
+                const added = await Progress.attachExtra(check[0].id, addExtra[0].insertId, extra.start_time);
                 if(!added)
                     return res.status(401).json({
                         success: false,
@@ -323,7 +323,7 @@ exports.attachExtra = async(req, res) => {
                 })
             }
 
-            const added = await Progress.attachExtra(add[0].insertId, addExtra[0].insertId);
+            const added = await Progress.attachExtra(add[0].insertId, addExtra[0].insertId, extra.start_time);
             if(!added)
                 return res.status(401).json({
                     success: false,

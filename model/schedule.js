@@ -4,7 +4,7 @@ module.exports = class Schedule{
     static scheduleToday(user_id, dayNumber, goal_id, date){
         return db.execute(`SELECT * FROM (
             (
-                SELECT 'Extra' as schedule_id, NULL AS start_time, NULL AS finish_time,
+                SELECT 'Extra' as schedule_id, extra_progress.start_time, NULL AS finish_time,
                 extra_task.category AS category,
                 NULL AS dietID, NULL AS dietName,
                 NULL AS workoutID, NULL AS workoutName,
@@ -91,7 +91,7 @@ module.exports = class Schedule{
                 FROM schedule
                     JOIN diet_schedule ON diet_schedule.schedule_id = schedule.schedule_id
                     JOIN diet_plan     ON diet_plan.diet_id = diet_schedule.diet_id
-                WHERE schedule.user_id = ? AND schedule.day_no = ?
+                WHERE schedule.user_id = ? AND schedule.day_no = ? GROUP BY schedule.schedule_id
             )        
                 UNION
             (
@@ -102,10 +102,10 @@ module.exports = class Schedule{
                 FROM schedule
                     JOIN workout_schedule ON workout_schedule.schedule_id = schedule.schedule_id
                     JOIN workout_plan     ON workout_plan.workout_plan_id = workout_schedule.workout_plan_id
-                WHERE schedule.user_id = ? AND schedule.day_no = ?
+                WHERE schedule.user_id = ? AND schedule.day_no = ? GROUP BY schedule.schedule_id
             )
         ) AS task
-            order by task.start_time`
+            ORDER BY task.start_time`  
         , [user_id, dayNumber, user_id, dayNumber]);
     }
 

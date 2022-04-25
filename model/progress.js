@@ -68,8 +68,8 @@ module.exports = class Progress{
         return db.execute(`INSERT INTO extra_task (name, category, calories) VALUES (?, ?, ?)`, [name, category, calories]);
     }
 
-    static attachExtra(progress_id, extra_id){
-        return db.execute(`INSERT INTO extra_progress VALUES (?, ?)`, [progress_id, extra_id]);
+    static attachExtra(progress_id, extra_id, start_time){
+        return db.execute(`INSERT INTO extra_progress VALUES (?, ?, ?)`, [progress_id, extra_id, start_time]);
     }
 
     static attachWorkout(progress_id, workout_plan_id, start_time, finish_time){
