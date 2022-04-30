@@ -1,6 +1,21 @@
 require("dotenv").config();
-const app = require("./app");
+const socketio = require('socket.io');
+const http = require('http');
 
-app.listen(process.env.PORT, () => {
+const app = require("./app");
+const server = http.createServer(app);
+const io = socketio(server, { cors: {origin: "*"}} );
+
+io.on('connection', (socket) => {
+    console.log('a user connected: ', socket.id);
+    socket.on("new_message", function (data) {
+      io.emit("new_message", data);
+  });
+    socket.on('disconnect', () => {
+      console.log('user disconnected');
+    });
+});
+
+server.listen(process.env.PORT, () => {
     console.log(`server running on, http://localhost:${process.env.PORT}`);
 });

@@ -14,6 +14,8 @@ const schedule = require('./routes/schedule');
 const dietPlan = require('./routes/dietPlan');
 const workoutPlan = require('./routes/workoutPlan');
 const progress = require('./routes/progress');
+const coach = require('./routes/coach');
+const client = require('./routes/client');
 
 app.use('/api/v1/public', express.static('public'));
 app.use('/api/v1', user);
@@ -26,5 +28,7 @@ app.use('/api/v1', schedule);
 app.use('/api/v1', dietPlan);
 app.use('/api/v1', workoutPlan);
 app.use('/api/v1', progress);
+app.use('/api/v1', coach);
+app.use('/api/v1', client);
 
 module.exports = app;
