@@ -6,6 +6,7 @@ const app = require("./app");
 const server = http.createServer(app);
 const io = socketio(server, { cors: {origin: "*"}} );
 
+let users = [];
 io.on('connection', (socket) => {
     console.log('a user connected: ', socket.id);
     socket.on("new_message", function (data) {

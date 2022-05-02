@@ -3,12 +3,12 @@ const Client = require('../model/client.js');
 exports.clientsCoach = async (req, res) => {
     try{
         const [user] = req.user;
-        const [coach] = await Client.myCoach(user[0].user_id);
+        let [coach] = await Client.myCoach(user[0].user_id);
         let expired;
     
         if(coach.length == 0)
         {
-            return res.status(401).json({
+            return res.status(200).json({
                 success:false,
                 message: "you have no coach"
             });
@@ -21,12 +21,13 @@ exports.clientsCoach = async (req, res) => {
             expired = true;
         else    
             expired = false;
+        
+        coach[0] = {...coach[0], expired}
 
         res.status(200).json({
             success:true,
             message: "your coach",
-            coach: coach,
-            expired: expired
+            coach: coach[0]
         });
     }catch(err){
         res.status(500).json({message:"Server error", error:err})

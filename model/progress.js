@@ -28,7 +28,7 @@ module.exports = class Progress{
             )
                 UNION
             (
-                SELECT NULL AS start_time, NULL AS finish_time,
+                SELECT extra_progress.start_time, NULL AS finish_time,
                 extra_task.category AS category,
                 NULL AS dietID, NULL AS dietName,
                 NULL AS workoutID, NULL AS workoutName,
