@@ -16,6 +16,7 @@ const workoutPlan = require('./routes/workoutPlan');
 const progress = require('./routes/progress');
 const coach = require('./routes/coach');
 const client = require('./routes/client');
+const chat = require('./routes/chat');
 
 app.use('/api/v1/public', express.static('public'));
 app.use('/api/v1', user);
@@ -30,5 +31,6 @@ app.use('/api/v1', workoutPlan);
 app.use('/api/v1', progress);
 app.use('/api/v1', coach);
 app.use('/api/v1', client);
+app.use('/api/v1', chat);
 
 module.exports = app;
