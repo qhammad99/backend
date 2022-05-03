@@ -24,7 +24,6 @@ const getUser = (userId)=>{
 
 io.on('connection', (socket) => {
     //login
-    console.log('a user connected: ', socket.id);
     socket.on("addUser", userId=>{
       addUser(userId, socket.id);
       io.emit("getUsers", users);
@@ -33,15 +32,16 @@ io.on('connection', (socket) => {
     //messages
     socket.on("send_message", function (data) {
       const user = getUser(data.reciever_id)
-      if(user)
-        io.to(user.socketId).emit("new_message", data);
+      if(user){
+        io.to(user.socketId).emit("get_message", data);
+      }
+
       db.execute(`INSERT INTO chat(sender_id, reciever_id, message, msg_time) VALUES (?, ?, ?, ?)`, 
-      [data.sender_id, data.reciever_id, data.message, data.msg_time])
+      [data.sender_id, data.reciever_id, data.message, data.msg_time]);
     });
 
     //logout
     socket.on('disconnect', () => {
-      console.log('user disconnected');
       removeUser(socket.id);
       io.emit("getUsers", users)
     });
