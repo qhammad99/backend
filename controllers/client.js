@@ -79,10 +79,23 @@ exports.addClientsCoach = async (req, res) => {
             );
 
         if(insertion){
+            let [coachs] = await Client.myCoach(user[0].user_id);
+            let expired;
+
+            let expiryDate = new Date(coachs[0].payment_expiry);
+            let nowDate = new Date();
+
+            if(expiryDate < nowDate)
+                expired = true;
+            else    
+                expired = false;
+        
+            coachs[0] = {...coachs[0], expired}
+
             res.status(200).json({
                 success:true,
                 message: "coach hired",
-                coach: coach 
+                coach: coachs[0]
             });
         }else
             res.status(500).json({message:"Server Error 2"})
