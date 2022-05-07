@@ -10,7 +10,6 @@ const io = socketio(server, { cors: {origin: "*"}} );
 let users = [];
 
 const addUser = (userId, socketId)=>{
-  !users.some(user=>user.userId == userId)&&
     users.push({userId, socketId});
 }
 
@@ -19,7 +18,7 @@ const removeUser = (socketId)=>{
 }
 
 const getUser = (userId)=>{
-  return users.find(user=>user.userId == userId)
+  return users.filter(user=>user.userId == userId)
 }
 
 io.on('connection', (socket) => {
@@ -31,13 +30,18 @@ io.on('connection', (socket) => {
 
     //messages
     socket.on("send_message", function (data) {
-      const user = getUser(data.reciever_id)
-      if(user){
-        io.to(user.socketId).emit("get_message", data);
-      }
-
       db.execute(`INSERT INTO chat(sender_id, reciever_id, message, msg_time) VALUES (?, ?, ?, ?)`, 
       [data.sender_id, data.reciever_id, data.message, data.msg_time]);
+
+      const sender = getUser(data.sender_id)
+      if(sender.length != 0 ){
+        sender.forEach((item)=>io.to(item.socketId).emit("message_sended", data))
+      }
+
+      const user = getUser(data.reciever_id)
+      if(user.length !=0 ){
+        user.forEach((item)=>io.to(item.socketId).emit("get_message", data))
+      }      
     });
 
     //logout
