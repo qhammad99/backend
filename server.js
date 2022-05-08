@@ -2,13 +2,18 @@ require("dotenv").config();
 const db = require('./config/database');
 const socketio = require('socket.io');
 const http = require('http');
+const express = require('express');
 
 const app = require("./app");
+//for html page loading, find socket folder in root directory to run static files from there
+app.use(express.static('socket'));
+
 const server = http.createServer(app);
 const io = socketio(server, { cors: {origin: "*"}} );
 
 let users = [];
 
+//function for socket
 const addUser = (userId, socketId)=>{
     users.push({userId, socketId});
 }
@@ -21,6 +26,7 @@ const getUser = (userId)=>{
   return users.filter(user=>user.userId == userId)
 }
 
+//socket
 io.on('connection', (socket) => {
     //login
     socket.on("addUser", userId=>{
