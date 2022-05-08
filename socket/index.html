@@ -1,0 +1,114 @@
+<!-- to visit this page url is http://your url:serverPort/index.html -->
+<!-- default sender act as a coach with user id 2 -->
+<!-- also change server ip at line number 13 -->
+<!-- also change server ip at line number 34 -->
+<!-- also add api generated token after login at line number 31 -->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chat app</title>
+        <script src="js/socket.io.js"></script>
+        <script src="js/jquery.js"></script>
+        <script>
+            var server = "http://192.168.0.103:3000";
+            var io = io(server);
+            io.emit("addUser", 2);
+            io.on("getUsers", users=>console.log(users))
+        </script>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+
+    <body>
+        <div class="root">
+            <div class="chatContainer">
+                <ul id="messages"></ul>
+                <form onsubmit="return sendMessage();">
+                    <input id="message" placeholder="Enter message" autocomplete="off" class="inpt">
+                    <input type="submit" value="Send" class="btn">
+                </form>
+            </div>
+        </div>
+        <p>Hello</p>
+
+        <script>
+            //old messages
+            const token = "eyJhbGciOiJIUzI1NiJ9.Mw.P3G3Y4RTl5vzWGmgOHyl4YEhq5mZlsTvFaCrTGx4fXs";
+
+            $.ajax({
+                url: "http://192.168.0.103:3000/api/v1/get-messages/2/3",
+                method: "GET",
+                headers:{
+                    Authorization: `Bearer ${token}`
+                },
+                success: function (messages) {
+                    var html = "";
+                    
+                    for (var a = messages.chat.length; a > 0; a--) {
+                        if(messages.chat[a-1].sender_id == 2)
+                            html += "<li class='sender'>"+ messages.chat[a-1].message + "</li>";
+                        else
+                            html += "<li class='reciever'>"+ messages.chat[a-1].message + "</li>";
+                    }
+                    
+                    var Element = document.getElementById("messages");
+                    // append in list
+                    Element.innerHTML += html;
+
+                    //scroll
+                    Element.scrollTop = Element.scrollHeight;
+                }
+        });
+        </script>
+
+        <script>
+            function sendMessage() {
+                // get message
+                var message = document.getElementById("message");
+
+                // sending message from client
+                var date = new Date();
+                var dateStr =
+                date.getFullYear() + "-"+
+                ("00" + (date.getMonth() + 1)).slice(-2) + "-" +
+                ("00" + date.getDate()).slice(-2) + " " +
+                ("00" + date.getHours()).slice(-2) + ":" +
+                ("00" + date.getMinutes()).slice(-2) + ":" +
+                ("00" + date.getSeconds()).slice(-2);
+
+                io.emit("send_message", {
+                    sender_id: 2,
+                    reciever_id: 3,
+                    message: message.value,
+                    msg_time: dateStr
+                })
+                var li = document.createElement("li");
+                li.className = "sender"
+                li.innerHTML = message.value;
+                var messages = document.getElementById("messages");
+                messages.appendChild(li);
+
+                //clear
+                message.value=""
+                
+                //scroll
+                messages.scrollTop = messages.scrollHeight;
+
+                // this will prevent the form from submitting
+                return false;
+            }
+            io.on("get_message", function (data) {
+                console.log("Server says", data);
+                var li = document.createElement("li");
+                li.className = "reciever"
+                li.innerHTML = data.message;
+                var messages = document.getElementById("messages");
+                messages.appendChild(li);
+
+                //scroll
+                messages.scrollTop = messages.scrollHeight;
+            });
+
+        </script>
+    </body>
+</html>
