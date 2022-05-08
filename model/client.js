@@ -3,7 +3,7 @@ const db = require('../config/database.js');
 module.exports = class Client{
     static myCoach(user_id){
         return db.execute(`
-            SELECT user.img_file, user.name, clients.* 
+            SELECT user.img_file, user.name, clients.*, coach.* 
             FROM  coach 
             INNER JOIN user ON user.user_id = coach.coach_id
             INNER JOIN clients ON clients.coach_id =  coach.coach_id
