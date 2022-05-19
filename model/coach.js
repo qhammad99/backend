@@ -10,6 +10,18 @@ module.exports = class Coach{
             WHERE coach.availability =  1
         `);
     }
+    static  coachSubscribedUsers(coach_id){
+        return db.execute(`
+        SELECT clients.*, user.img_file, user.name,user.email,parameters.height,parameters.weight,parameters.dob,parameters.gender,goal.number_of_days,
+        goal.start_date,goal.target_type,goal.target_value,goal.status
+        FROM  clients 
+        INNER JOIN user 
+        ON user.user_id = clients.user_id 
+        INNER JOIN parameters ON user.user_id = parameters.user_id 
+        INNER JOIN goal ON user.user_id = goal.user_id 
+        WHERE clients.coach_id = (?)
+        `,[coach_id]);
+    }
 
     static coachDetail(user_id){
         return db.execute(`
