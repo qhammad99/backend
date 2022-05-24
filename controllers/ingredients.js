@@ -90,7 +90,7 @@ exports.showIngredients = async(req, res) =>{
             });   
         }
 
-        res.status(400).json({
+        res.status(200).json({
             success:true,
             message: "ingredients",
             ingredients: ingredients            
@@ -141,7 +141,7 @@ exports.showCategories = async(req, res) =>{
             });   
         }
 
-        res.status(400).json({
+        res.status(200).json({
             success:true,
             message: "ingredients Categories",
             category: categories            

@@ -1,9 +1,9 @@
 const db = require('../config/database.js');
 
 module.exports = class userGoal{
-    static addGoal(user_id, start_date, number_of_days, target_type, target_value){
-        return db.execute(`INSERT INTO goal (user_id, start_date, number_of_days, target_type, target_value) VALUES (?, ?, ?, ?, ?)`, 
-        [user_id, start_date, number_of_days, target_type, target_value]);
+    static addGoal(user_id, start_date, number_of_days, target_type, target_value, difficulty){
+        return db.execute(`INSERT INTO goal (user_id, start_date, number_of_days, target_type, target_value, difficulty) VALUES (?, ?, ?, ?, ?, ?)`, 
+        [user_id, start_date, number_of_days, target_type, target_value, difficulty]);
     }
 
     static goalFlag(id, flag){
@@ -34,11 +34,11 @@ module.exports = class userGoal{
         return db.execute(`SELECT COUNT(*) AS GOALS FROM goal WHERE status = ? AND user_id = ?`, ['completed', user_id]);
     }
 
-    static copySchedule(user_id){
+    static copySchedule(user_id, level){
         return db.execute(`INSERT INTO schedule(user_id, day_no, start_time, finish_time, category)
         SELECT ? AS user_id, day_no, start_time, finish_time, category
         FROM schedule
-        WHERE user_id = 1`, [user_id]);
+        WHERE user_id = 1 AND level = ?`, [user_id, level]);
     }
 
     static copyScheduleIDdiet(user_id){
@@ -47,11 +47,11 @@ module.exports = class userGoal{
         WHERE schedule.user_id = ? AND schedule.category = 'Diet'`, [user_id]);
     }
 
-    static updateDietID(){
+    static updateDietID(level){
         return db.execute(`UPDATE diet_schedule as s, (SELECT diet_schedule.diet_id AS id from diet_schedule
-            JOIN schedule ON schedule.schedule_id = diet_schedule.schedule_id AND schedule.user_id = 1) AS p
+            JOIN schedule ON schedule.schedule_id = diet_schedule.schedule_id AND schedule.user_id = 1 AND schedule.level = ?) AS p
             SET s.diet_id = p.id
-            WHERE s.diet_id is null`);
+            WHERE s.diet_id is null`,[level]);
     }
 
     static copyScheduleIDworkout(user_id){
@@ -60,10 +60,10 @@ module.exports = class userGoal{
         WHERE schedule.user_id = ? AND schedule.category = 'Workout'`, [user_id]);
     }
 
-    static updateWorkoutID(){
+    static updateWorkoutID(level){
         return db.execute(`UPDATE workout_schedule as s, (SELECT workout_schedule.workout_plan_id AS id from workout_schedule
-            JOIN schedule ON schedule.schedule_id = workout_schedule.schedule_id AND schedule.user_id = 1) AS p
+            JOIN schedule ON schedule.schedule_id = workout_schedule.schedule_id AND schedule.user_id = 1 AND schedule.level = ?) AS p
             SET s.workout_plan_id = p.id
-            WHERE s.workout_plan_id is null`);
+            WHERE s.workout_plan_id is null`,[level]);
     }
 };

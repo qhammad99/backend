@@ -41,6 +41,7 @@ module.exports= class ingredientCategory{
             ingredients.price, 
             ingredients.weight, 
             ingredients.calories, 
+            ingredients.image,
             ingredients_category.name AS category
             
             FROM ingredients 

@@ -5,22 +5,34 @@ exports.add = async (req, res) => {
         const [user]= req.user;
         const goal = req.body;
 
-        if(goal.start_date == null || goal.number_of_days == null || goal.target_type == null || goal.target_value == null)
+        if(
+            goal.start_date == null || 
+            goal.number_of_days == null || 
+            goal.target_type == null || 
+            goal.target_value == null ||
+            goal.difficulty == null
+            )
             return res.status(400).json({
                 success:false,
                 message: "Please Fill all Fields",
             });
         
-        const added = await Goal.addGoal(user[0].user_id, goal.start_date, goal.number_of_days, goal.target_type, goal.target_value);
+        const added = await Goal.addGoal(
+            user[0].user_id, 
+            goal.start_date, 
+            goal.number_of_days, 
+            goal.target_type, 
+            goal.target_value,
+            goal.difficulty);
         
         if(added){
 
             // copy schedule and relevant diets and workouts
-            const [schedule] = await Goal.copySchedule(user[0].user_id);
+            const [schedule] = await Goal.copySchedule(user[0].user_id, goal.difficulty);
             const [scheduleIDdiets] = await Goal.copyScheduleIDdiet(user[0].user_id);
-            const [dietID]= await Goal.updateDietID();
+            const [dietID]= await Goal.updateDietID(goal.difficulty);
             const [scheduleIDworkout] = await Goal.copyScheduleIDworkout(user[0].user_id);
-            const [workoutID]= await Goal.updateWorkoutID();
+            const [workoutID]= await Goal.updateWorkoutID(goal.difficulty);
             if(!schedule || !scheduleIDdiets || !dietID || !scheduleIDworkout || !workoutID){
                 return res.status(400).json({
                     success: false,
