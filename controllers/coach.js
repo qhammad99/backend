@@ -1,5 +1,29 @@
 const Coach = require('../model/coach.js');
 
+exports.coachUsersSubscribed = async (req, res) => {
+    
+    try{
+        // const [user]= req.coachId;
+        const userObj = req.body;
+        const [coachs] = await Coach.coachSubscribedUsers(userObj.coachId);
+    
+        if(coachs.length == 0)
+        {
+            return res.status(401).json({
+                success:false,
+                message: "No Users available"
+            });
+        }
+
+        res.status(200).json({
+            success:true,
+            message: "Available users",
+            coachs: coachs
+        });
+    }catch(err){
+        res.status(500).json({message:"Server error", error:err})
+    }
+}
 exports.availableCoachs = async (req, res) => {
     try{
         const [coachs] = await Coach.availableCoach();
@@ -21,6 +45,7 @@ exports.availableCoachs = async (req, res) => {
         res.status(500).json({message:"Server error", error:err})
     }
 }
+
 
 exports.coachDetail = async (req, res) => {
     try{

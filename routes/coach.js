@@ -8,10 +8,12 @@ const {
     coachInfoByID,
     addCoachInfo,
     coachFindByName,
-    changeStatus
+    changeStatus,
+    coachUsersSubscribed
 } = require('../controllers/coach.js');
 const {isAuthenticated} = require('../middleware/userAuth');
 
+router.route('/coach-all-users').post(isAuthenticated, coachUsersSubscribed);
 router.route('/coach-all').get(isAuthenticated, availableCoachs);
 router.route('/coach-detail').get(isAuthenticated, coachDetail); //agr coach walay table sy rec nai mila to mtlb us ny detail signup nai ki
 router.route('/coach-clients').get(isAuthenticated, coachClients);

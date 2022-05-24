@@ -37,7 +37,10 @@ module.exports = class userInfo{
         let hashPassword = await bcrypt.hash(password, 10);
         return db.execute(`UPDATE user SET password= ? WHERE user_id = ?`, [hashPassword, id]);
     }
-
+    static async updatePassword(id, password){
+        let hashPassword = await bcrypt.hash(password, 10);
+        return db.execute(`UPDATE user SET password= ? WHERE user_id = ?`, [hashPassword, id]);
+    }
     static updatePhoto(id, image){
         return db.execute(`UPDATE user SET img_file= ? WHERE user_id = ?`, [image, id]);
     }
