@@ -29,9 +29,9 @@ module.exports= class ingredientCategory{
             WHERE ingredients.category = ?`, [category]);
     }
 
-    static addIngredient(category, name, price, calories, weight){
-        return db.execute(`INSERT INTO ingredients (category, name, price, calories, weight) VALUES (?, ?, ?, ?, ?)`,[
-            category, name, price, calories, weight]);
+    static addIngredient(image, category, name, price, calories, weight){
+        return db.execute(`INSERT INTO ingredients (category, name, price, calories, weight, image) VALUES (?, ?, ?, ?, ?, ?)`,[
+            category, name, price, calories, weight, image]);
     }
 
     static allIngredients(){
@@ -54,5 +54,9 @@ module.exports= class ingredientCategory{
 
     static allCategories(){
         return db.execute(`SELECT * FROM ingredients_category`);
+    }
+
+    static updatePrice(id, price){
+        return db.execute(`UPDATE ingredients SET price = ? WHERE id = ?`,[price, id]);
     }
 }
