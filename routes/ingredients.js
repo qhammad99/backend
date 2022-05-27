@@ -8,12 +8,15 @@ const {
     addIngredient, 
     showIngredients, 
     addCategory, 
-    showCategories
+    showCategories,
+    updatePrice
 } = require('../controllers/ingredients');
+const upload = require('../helpers/ingredient-image');
 
 router.route('/ingredients/id/:id').get(isAuthenticated, findByID);
 router.route('/ingredients/category/:category').get(isAuthenticated, findByCategory);
-router.route('/ingredients').post(isAuthenticated, addIngredient).get(isAuthenticated, showIngredients);
+router.route('/ingredients').patch(isAuthenticated, upload.single('photo'), addIngredient).get(isAuthenticated, showIngredients);
 router.route('/ingredients-category').post(isAuthenticated, addCategory).get(isAuthenticated, showCategories);
+router.route('/ingredient/update').post(isAuthenticated, updatePrice);
 
 module.exports = router;

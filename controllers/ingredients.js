@@ -54,19 +54,22 @@ exports.findByCategory= async(req, res) => {
 
 exports.addIngredient = async(req, res) => {
     try{
-        const ingredient = req.body;
-        if(ingredient.category == null || ingredient.name == null || ingredient.price == null || ingredient.calories == null || ingredient.weight == null)
+        const {category, name, price, calories, weight} = req.body;
+
+        if(!req.file || !category || !name || !price || !calories || !weight)
             return res.status(400).json({
                 success:false,
                 message: "Must fill all fiels",
             });
 
-        const added = await Ingredients.addIngredient(ingredient.category, ingredient.name, ingredient.price, ingredient.calories, ingredient.weight);
+        const added = await Ingredients.addIngredient(req.file.filename, category, name, price, calories, weight);
         
         if(added){
             return res.status(201).json({
                 success:true,
                 message: "ingredient added successful",
+                id: added[0].insertId,
+                image: req.file.filename
             });   
         }else
             res.status(500).json({message:"Server Error 2"})
@@ -152,4 +155,38 @@ exports.showCategories = async(req, res) =>{
             message:error.message
         })
     }
+}
+
+exports.updatePrice = async(req, res) => {
+    try {
+        const details = req.body;
+
+        let updated; // to check is any row affected by update or not
+
+        if (!details.id && !details.newPrice)
+            return res.status(400).json({
+                success: false,
+                message: "Not shared data to update",
+            });
+
+        updated = await Ingredients.updatePrice(details.id, details.price);
+        
+        if (updated[0].affectedRows == 0)
+            return res.status(401).json({
+                success: false,
+                message: "ingredient not found"
+            });
+
+        res.status(200).json({
+            success: true,
+            message: "updated successfully"
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        })
+    }
+
 }
