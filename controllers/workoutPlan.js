@@ -94,12 +94,12 @@ exports.generalWorkoutPlan = async(req, res) => {
 
         if(workoutPlans.length == 0)
             return res.status(401).json({
-                status:false,
+                success:false,
                 message: "No general workout plans"
             });
         
         res.status(200).json({
-            status: true,
+            success: true,
             message: "general workout plans",
             workoutPlans: workoutPlans
         })

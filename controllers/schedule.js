@@ -77,13 +77,10 @@ exports.scheduleByDay = async(req, res) => {
 exports.addSchedule = async(req, res) => {
     try{
         const [user] = req.user;
-        const schedule = req.body;
+        const {day_no, start_time, finish_time, category, diet_id, workout_plan_id, level} = req.body;
         
         // check null
-        if(schedule.day_no == null || schedule.start_time == null 
-            || schedule.finish_time == null || schedule.category == null 
-            || (schedule.diet_id == null && schedule.workout_plan_id == null)
-            ){
+        if(!day_no || !start_time || !finish_time || !category || (!diet_id && !workout_plan_id)){
             return res.status(500).json({
                 success: false,
                 message: "empty fields not allowed"
@@ -91,19 +88,17 @@ exports.addSchedule = async(req, res) => {
         }
 
         let addedSchedule;
-        if(schedule.level == null)
-            addedSchedule = await Schedule.addSchedule(user[0].user_id, schedule.day_no, schedule.start_time,
-            schedule.finish_time, schedule.category, null);
+        if(!level)
+            addedSchedule = await Schedule.addSchedule(user[0].user_id, day_no, start_time, finish_time, category, null);
         else 
-            addedSchedule = await Schedule.addSchedule(user[0].user_id, schedule.day_no, schedule.start_time,
-            schedule.finish_time, schedule.category, schedule.level);
+            addedSchedule = await Schedule.addSchedule(user[0].user_id, day_no, start_time, finish_time, category, level);
 
         if(addedSchedule){
             const scheduleID = addedSchedule[0].insertId;
 
-            if(schedule.diet_id == null){
+            if(!diet_id){
                 // add workout_plan_id
-                const workoutAdd = await Schedule.attachWorkout(scheduleID, schedule.workout_plan_id);
+                const workoutAdd = await Schedule.attachWorkout(scheduleID, workout_plan_id);
                 if(!workoutAdd){
                     await removeSchedule(scheduleID);
                     return res.status(401).json({
@@ -113,9 +108,9 @@ exports.addSchedule = async(req, res) => {
                 }
             }
 
-            if(schedule.workout_plan_id == null){
+            if(!workout_plan_id){
                 // add diet_id
-                const dietAdd = await Schedule.attachDiet(scheduleID, schedule.diet_id);
+                const dietAdd = await Schedule.attachDiet(scheduleID, diet_id);
                 if(!dietAdd){
                     await removeSchedule(scheduleID);
                     return res.status(401).json({
