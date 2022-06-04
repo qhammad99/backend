@@ -24,6 +24,7 @@ exports.coachUsersSubscribed = async (req, res) => {
         res.status(500).json({message:"Server error", error:err})
     }
 }
+
 exports.availableCoachs = async (req, res) => {
     try{
         const [coachs] = await Coach.availableCoach();
@@ -45,7 +46,6 @@ exports.availableCoachs = async (req, res) => {
         res.status(500).json({message:"Server error", error:err})
     }
 }
-
 
 exports.coachDetail = async (req, res) => {
     try{
@@ -134,29 +134,35 @@ exports.addCoachInfo = async (req, res) => {
         const [user] = req.user;
         const coach = req.body;
 
-        if(!coach.charges || !coach.joining_date || !coach.coaching_experience || !coach.account_number){
+        if(!coach.charges ||!coach.coaching_experience || !coach.account_number){
             return res.status(401).json({
                 success:false,
                 message: "can't add empty fields"
             });
         }
 
+        let nowDate = new Date()
+        nowDate = nowDate.toISOString().split('T')[0];
+
         const insertion = await Coach.coachAdd(
             user[0].user_id, 
             coach.charges, 
-            coach.joining_date,
+            nowDate,
             coach.coaching_experience,
             coach.account_number
             );
 
         if(insertion){
-            res.status(200).json({
-                success:true,
-                message: "coach inserted",
-                coach: coach 
-            });
+            const update = await Coach.updateFlag(user[0].user_id);
+            if(update[0].affectedRows >0)
+                return res.status(200).json({
+                    success:true,
+                    message: "info added successfully",
+                });
+            else
+                res.status(401).json({message:"Server Error 2"})
         }else
-            res.status(500).json({message:"Server Error 2"})
+            res.status(401).json({message:"Server Error 2"})
 
     }catch(err){
         res.status(500).json({message:"Server error", error:err})

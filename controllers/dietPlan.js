@@ -94,12 +94,12 @@ exports.generalDietPlan = async(req, res) => {
 
         if(dietPlans.length == 0)
             return res.status(401).json({
-                status:false,
+                success:false,
                 message: "No general diet plans"
             });
         
         res.status(200).json({
-            status: true,
+            success: true,
             message: "general diet plans",
             dietPlans: dietPlans
         })
