@@ -66,4 +66,8 @@ module.exports = class Coach{
             WHERE coach_id = ?
         `, [status, id]);
     }
+
+    static updateFlag(id){
+        return db.execute(`UPDATE user SET isParameters= ? WHERE user_id = ?`, [1, id]);
+    }
 };
