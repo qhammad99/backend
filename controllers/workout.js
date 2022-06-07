@@ -12,7 +12,7 @@ exports.findByID = async(req, res) => {
             });   
         }
 
-        res.status(400).json({
+        res.status(200).json({
             success:true,
             message: "workout",
             workouts: workout[0]            
@@ -38,7 +38,7 @@ exports.findByCategory= async(req, res) => {
             });   
         }
 
-        res.status(400).json({
+        res.status(200).json({
             success:true,
             message: "workouts",
             workouts: workouts            
@@ -141,7 +141,7 @@ exports.showCategories = async(req, res) =>{
             });   
         }
 
-        res.status(400).json({
+        res.status(200).json({
             success:true,
             message: "workout Categories",
             category: categories            
