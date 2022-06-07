@@ -90,7 +90,7 @@ exports.showWorkouts = async(req, res) =>{
             });   
         }
 
-        res.status(400).json({
+        res.status(200).json({
             success:true,
             message: "workouts",
             workouts: workouts            
