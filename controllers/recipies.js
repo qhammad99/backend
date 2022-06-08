@@ -1,3 +1,4 @@
+const { json } = require('express/lib/response');
 const Recipies = require('../model/recipies');
 
 exports.myRecipies = async(req, res) => {
@@ -6,7 +7,7 @@ exports.myRecipies = async(req, res) => {
         const [recipies] = await Recipies.myRecipies(user[0].user_id);
         
         if(recipies.length == 0){
-            return res.status(500).json({
+            return res.status(200).json({
                 success: false,
                 message: "You don't have your any own recipie",
             })
@@ -52,23 +53,24 @@ exports.recipieByID = async(req, res) => {
 exports.addRecipie = async(req, res) => {
     try{
         const [user] = req.user;
-        const recipie = req.body;
+        const {name, calorie, ingredients} = req.body;
+        const new_ingrediets= ingredients.map(ing=> JSON.parse(ing));
 
         // check null
-        if(recipie.name == null || recipie.calorie == null || recipie.ingredients.length == 0){
+        if(!req.file || name == null || calorie == null || ingredients.length == 0){
             return res.status(500).json({
                 success: false,
                 message: "empty fields not allowed"
             })
         }
 
-        const addedRecipie = await Recipies.addRecipie(user[0].user_id, recipie.name, recipie.calorie);
+        const addedRecipie = await Recipies.addRecipie(user[0].user_id, name, calorie, req.file.filename);
         if(addedRecipie){
             const recipieId = addedRecipie[0].insertId;
 
-            const ingredients = recipie.ingredients.map(ingredient =>[ingredient.id, recipieId, ingredient.qty]);
+            const modified_ingredients = new_ingrediets.map(ingredient =>[ingredient.id, recipieId, ingredient.qty]);
 
-            const ingredientsAdded = await Recipies.attachIngredients(ingredients);
+            const ingredientsAdded = await Recipies.attachIngredients(modified_ingredients);
             if(ingredientsAdded)
                 return res.status(200).json({
                     success: true,
@@ -94,12 +96,12 @@ exports.generalRecipies = async(req, res) => {
 
         if(recipies.length == 0)
             return res.status(401).json({
-                status:false,
+                success:false,
                 message: "No general recipies"
             });
         
         res.status(200).json({
-            status: true,
+            success: true,
             message: "general recipies",
             recipies: recipies
         })
