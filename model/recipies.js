@@ -17,8 +17,8 @@ module.exports = class Recipies{
         return db.execute(`SELECT * FROM recipie WHERE recipie_id = ?`, [recipie_id]);
     }
 
-    static addRecipie(user_id, name, calorie){
-        return db.execute(`INSERT INTO recipie (user_id, name, calorie) VALUES (?, ?, ?)`, [user_id, name, calorie]);
+    static addRecipie(user_id, name, calorie, image){
+        return db.execute(`INSERT INTO recipie (user_id, name, calorie, image) VALUES (?, ?, ?, ?)`, [user_id, name, calorie, image]);
     }
 
     static attachIngredients(rowsData){
@@ -31,6 +31,7 @@ module.exports = class Recipies{
             ingredients_category.name as category, 
             ingredients.price, 
             ingredients.calories, 
+            ingredients.name,
             ingredients.weight, 
             ingredient_recipie.quantity
             
