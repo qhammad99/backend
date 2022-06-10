@@ -41,17 +41,25 @@ module.exports = class userGoal{
         WHERE user_id = 1 AND level = ?`, [user_id, level]);
     }
 
+    static scheduleByUser(user_id){
+        return db.execute(`SELECT schedule_id, category FROM schedule WHERE user_id = ?`, [user_id]);
+    }
+
     static copyScheduleIDdiet(user_id){
         return db.execute(`INSERT INTO diet_schedule(schedule_id)
         SELECT schedule.schedule_id FROM schedule
         WHERE schedule.user_id = ? AND schedule.category = 'Diet'`, [user_id]);
     }
 
-    static updateDietID(level){
-        return db.execute(`UPDATE diet_schedule as s, (SELECT diet_schedule.diet_id AS id from diet_schedule
-            JOIN schedule ON schedule.schedule_id = diet_schedule.schedule_id AND schedule.user_id = 1 AND schedule.level = ?) AS p
-            SET s.diet_id = p.id
-            WHERE s.diet_id is null`,[level]);
+    static copyDiets(level){
+        return db.execute(`SELECT diet_schedule.diet_id AS id from diet_schedule
+            JOIN schedule ON schedule.schedule_id = diet_schedule.schedule_id 
+            AND schedule.user_id = 1 AND schedule.level = ?`,[level]);
+    }
+
+    static updateDietID(diet_id, schedule_id){
+        return db.execute(`UPDATE diet_schedule SET diet_id = ?
+        WHERE schedule_id = ?`,[diet_id, schedule_id]);
     }
 
     static copyScheduleIDworkout(user_id){
@@ -60,10 +68,14 @@ module.exports = class userGoal{
         WHERE schedule.user_id = ? AND schedule.category = 'Workout'`, [user_id]);
     }
 
-    static updateWorkoutID(level){
-        return db.execute(`UPDATE workout_schedule as s, (SELECT workout_schedule.workout_plan_id AS id from workout_schedule
-            JOIN schedule ON schedule.schedule_id = workout_schedule.schedule_id AND schedule.user_id = 1 AND schedule.level = ?) AS p
-            SET s.workout_plan_id = p.id
-            WHERE s.workout_plan_id is null`,[level]);
+    static copyWorkouts(level){
+        return db.execute(`SELECT workout_schedule.workout_plan_id AS id from workout_schedule
+            JOIN schedule ON schedule.schedule_id = workout_schedule.schedule_id 
+            AND schedule.user_id = 1 AND schedule.level = ?`,[level]);
+    }
+
+    static updateWorkoutID(workout_plan_id, schedule_id){
+        return db.execute(`UPDATE workout_schedule SET workout_plan_id = ?
+            WHERE schedule_id = ?`,[workout_plan_id, schedule_id]);
     }
 };
