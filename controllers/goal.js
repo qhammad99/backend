@@ -28,16 +28,24 @@ exports.add = async (req, res) => {
         if(added){
 
             // copy schedule and relevant diets and workouts
-            const [schedule] = await Goal.copySchedule(user[0].user_id, goal.difficulty);
-            const [scheduleIDdiets] = await Goal.copyScheduleIDdiet(user[0].user_id);
-            const [dietID]= await Goal.updateDietID(goal.difficulty);
-            const [scheduleIDworkout] = await Goal.copyScheduleIDworkout(user[0].user_id);
-            const [workoutID]= await Goal.updateWorkoutID(goal.difficulty);
-            if(!schedule || !scheduleIDdiets || !dietID || !scheduleIDworkout || !workoutID){
-                return res.status(400).json({
-                    success: false,
-                    message: "not able to generate schedule"
-                })
+            await Goal.copySchedule(user[0].user_id, goal.difficulty);
+            await Goal.copyScheduleIDdiet(user[0].user_id);
+            await Goal.copyScheduleIDworkout(user[0].user_id);
+
+            const [schedule] = await Goal.scheduleByUser(user[0].user_id);
+            const [copyDiets] = await Goal.copyDiets(goal.difficulty);
+            const [copyWorkouts]= await Goal.copyWorkouts(goal.difficulty);
+
+            var dietCounter =0;
+            var workoutCounter = 0;
+            for(i=0; i<schedule.length; i++){
+                if(schedule[i].category == 'Diet'){
+                    await Goal.updateDietID(copyDiets[dietCounter].id, schedule[i].schedule_id);
+                    ++dietCounter;
+                }else{
+                    await Goal.updateWorkoutID(copyWorkouts[workoutCounter].id, schedule[i].schedule_id);
+                    ++workoutCounter;
+                }
             }
 
             // update the isGoal flag in user table
