@@ -35,8 +35,8 @@ module.exports = class userGoal{
     }
 
     static copySchedule(user_id, level){
-        return db.execute(`INSERT INTO schedule(user_id, day_no, start_time, finish_time, category)
-        SELECT ? AS user_id, day_no, start_time, finish_time, category
+        return db.execute(`INSERT INTO schedule(user_id, day_no, start_time, finish_time, category, image)
+        SELECT ? AS user_id, day_no, start_time, finish_time, category, image
         FROM schedule
         WHERE user_id = 1 AND level = ?`, [user_id, level]);
     }

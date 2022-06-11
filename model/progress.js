@@ -8,7 +8,8 @@ module.exports = class Progress{
                 'Diet' AS category,
                 diet_plan.diet_id AS dietID, diet_plan.name AS dietName, 
                 NULL AS workoutID, NULL AS workoutName,
-                NULL AS extraID, NULL AS extraName 
+                NULL AS extraID, NULL AS extraName,
+                diet_progress.image AS image 
                 FROM diet_progress
                     JOIN progress ON diet_progress.progress_id = progress.id
                     JOIN diet_plan     ON diet_plan.diet_id = diet_progress.diet_id
@@ -20,7 +21,8 @@ module.exports = class Progress{
                 'Workout' AS category,
                 NULL AS dietID, NULL AS dietName,
                 workout_plan.workout_plan_id AS workoutID, workout_plan.name AS workoutName,
-                NULL AS extraID, NULL AS extraName 
+                NULL AS extraID, NULL AS extraName,
+                workout_progress.image AS image 
                 FROM workout_progress
                     JOIN progress ON workout_progress.progress_id = progress.id
                     JOIN workout_plan     ON workout_plan.workout_plan_id = workout_progress.workout_plan_id
@@ -32,7 +34,8 @@ module.exports = class Progress{
                 extra_task.category AS category,
                 NULL AS dietID, NULL AS dietName,
                 NULL AS workoutID, NULL AS workoutName,
-                extra_task.id AS extraID, extra_task.name AS extraName 
+                extra_task.id AS extraID, extra_task.name AS extraName,
+                NULL AS image 
                 FROM extra_progress
                     JOIN progress ON extra_progress.progress_id = progress.id
                     JOIN extra_task ON extra_task.id = extra_progress.extra_id
@@ -72,14 +75,14 @@ module.exports = class Progress{
         return db.execute(`INSERT INTO extra_progress VALUES (?, ?, ?)`, [progress_id, extra_id, start_time]);
     }
 
-    static attachWorkout(progress_id, workout_plan_id, start_time, finish_time){
-        return db.execute(`INSERT INTO workout_progress VALUES (?, ?, ?, ?)`, 
-            [progress_id, workout_plan_id, start_time, finish_time]);
+    static attachWorkout(progress_id, workout_plan_id, start_time, finish_time, image){
+        return db.execute(`INSERT INTO workout_progress VALUES (?, ?, ?, ?, ?)`, 
+            [progress_id, workout_plan_id, start_time, finish_time, image]);
     }
 
-    static attachDiet(progress_id, diet_id, start_time, finish_time){
-        return db.execute(`INSERT INTO diet_progress VALUES (?, ?, ?, ?)`, 
-            [progress_id, diet_id, start_time, finish_time]);
+    static attachDiet(progress_id, diet_id, start_time, finish_time, image){
+        return db.execute(`INSERT INTO diet_progress VALUES (?, ?, ?, ?, ?)`, 
+            [progress_id, diet_id, start_time, finish_time, image]);
     }
 
     static findByDay(goal_id, day_no){

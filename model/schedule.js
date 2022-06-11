@@ -9,7 +9,8 @@ module.exports = class Schedule{
                 NULL AS dietID, NULL AS dietName,
                 NULL AS workoutID, NULL AS workoutName,
                 extra_task.id AS extraID, extra_task.name AS extraName,
-                extra_task.calories AS calories 
+                extra_task.calories AS calories,
+                NULL AS image 
                 FROM extra_progress
                     JOIN progress ON extra_progress.progress_id = progress.id
                     JOIN extra_task ON extra_task.id = extra_progress.extra_id
@@ -23,7 +24,8 @@ module.exports = class Schedule{
                     diet_plan.diet_id as dietID, diet_plan.name as dietName, 
                     NULL as workoutID, NULL as workoutName,
                     NULL AS extraID, NULL AS extraName,
-                    SUM(recipie.calorie) AS calories    
+                    SUM(recipie.calorie) AS calories,
+                    diet_progress.image AS image    
                     FROM diet_progress
                         JOIN progress ON diet_progress.progress_id = progress.id
                         JOIN diet_plan     ON diet_plan.diet_id = diet_progress.diet_id
@@ -38,7 +40,8 @@ module.exports = class Schedule{
                     NULL as dietID, NULL as dietName,
                     workout_plan.workout_plan_id as workoutID, workout_plan.name as workoutName,
                     NULL AS extraID, NULL AS extraName,
-                    SUM(workouts.calorie) AS calories   
+                    SUM(workouts.calorie) AS calories,
+                    workout_progress.image AS image   
                     FROM workout_progress
                         JOIN progress ON workout_progress.progress_id = progress.id
                         JOIN workout_plan     ON workout_plan.workout_plan_id = workout_progress.workout_plan_id
@@ -52,7 +55,8 @@ module.exports = class Schedule{
                     diet_plan.diet_id as dietID, diet_plan.name as dietName, 
                     NULL as workoutID, NULL as workoutName,
                     NULL AS extraID, NULL AS extraName,
-                    SUM(recipie.calorie) AS calories  
+                    SUM(recipie.calorie) AS calories,
+                    schedule.image AS image  
                     FROM schedule
                         JOIN diet_schedule ON diet_schedule.schedule_id = schedule.schedule_id
                         JOIN diet_plan     ON diet_plan.diet_id = diet_schedule.diet_id
@@ -66,7 +70,8 @@ module.exports = class Schedule{
                     NULL as dietID, NULL as dietName,
                     workout_plan.workout_plan_id as workoutID, workout_plan.name as workoutName,
                     NULL AS extraID, NULL AS extraName,
-                    SUM(workouts.calorie) AS calories  
+                    SUM(workouts.calorie) AS calories,
+                    schedule.image AS image    
                     FROM schedule
                         JOIN workout_schedule ON workout_schedule.schedule_id = schedule.schedule_id
                         JOIN workout_plan     ON workout_plan.workout_plan_id = workout_schedule.workout_plan_id
@@ -87,7 +92,8 @@ module.exports = class Schedule{
                 SELECT schedule.schedule_id, schedule.start_time, schedule.finish_time, schedule.category,
                 diet_plan.diet_id as dietID, diet_plan.name as dietName, 
                 NULL as workoutID, NULL as workoutName,
-                NULL AS extraID, NULL AS extraName  
+                NULL AS extraID, NULL AS extraName,
+                schedule.image AS image  
                 FROM schedule
                     JOIN diet_schedule ON diet_schedule.schedule_id = schedule.schedule_id
                     JOIN diet_plan     ON diet_plan.diet_id = diet_schedule.diet_id
@@ -98,7 +104,8 @@ module.exports = class Schedule{
                 SELECT schedule.schedule_id, schedule.start_time, schedule.finish_time, schedule.category,
                 NULL as dietID, NULL as dietName,
                 workout_plan.workout_plan_id as workoutID, workout_plan.name as workoutName,
-                NULL AS extraID, NULL AS extraName  
+                NULL AS extraID, NULL AS extraName,
+                schedule.image AS image    
                 FROM schedule
                     JOIN workout_schedule ON workout_schedule.schedule_id = schedule.schedule_id
                     JOIN workout_plan     ON workout_plan.workout_plan_id = workout_schedule.workout_plan_id
