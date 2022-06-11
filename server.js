@@ -34,6 +34,11 @@ io.on('connection', (socket) => {
       io.emit("getUsers", users);
     });
 
+    //manual login to get users
+    socket.on("sending", userId=>{
+      io.emit("getUsers", users);
+    });
+
     //messages
     socket.on("send_message", function (data) {
       db.execute(`INSERT INTO chat(sender_id, reciever_id, message, msg_time) VALUES (?, ?, ?, ?)`, 
@@ -48,6 +53,12 @@ io.on('connection', (socket) => {
       if(user.length !=0 ){
         user.forEach((item)=>io.to(item.socketId).emit("get_message", data))
       }      
+    });
+
+    //manual logout
+    socket.on('removeMe', () => {
+      removeUser(socket.id);
+      io.emit("getUsers", users)
     });
 
     //logout
