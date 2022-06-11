@@ -118,7 +118,7 @@ exports.attachDiet = async(req, res) => {
                     message: "Can't attach diet"
                 })
             else{
-                const added = await Progress.attachDiet(check[0].id, diet.diet_id, diet.start_time, diet.finish_time);
+                const added = await Progress.attachDiet(check[0].id, diet.diet_id, diet.start_time, diet.finish_time, diet.image);
                 if(!added)
                     return res.status(401).json({
                         success: false,
@@ -138,7 +138,7 @@ exports.attachDiet = async(req, res) => {
                 })
             }
 
-            const added = await Progress.attachDiet(add[0].insertId, diet.diet_id, diet.start_time, diet.finish_time);
+            const added = await Progress.attachDiet(add[0].insertId, diet.diet_id, diet.start_time, diet.finish_time, diet.image);
             if(!added)
                 return res.status(401).json({
                     success: false,
@@ -198,7 +198,7 @@ exports.attachWorkout = async(req, res) => {
                 })
             
             else{
-                const added = await Progress.attachWorkout(check[0].id, workout.workout_plan_id, workout.start_time, workout.finish_time);
+                const added = await Progress.attachWorkout(check[0].id, workout.workout_plan_id, workout.start_time, workout.finish_time, workout.image);
                 if(!added)
                     return res.status(401).json({
                         success: false,
@@ -218,7 +218,7 @@ exports.attachWorkout = async(req, res) => {
                 })
             }
 
-            const added = await Progress.attachWorkout(add[0].insertId, workout.workout_plan_id, workout.start_time, workout.finish_time);
+            const added = await Progress.attachWorkout(add[0].insertId, workout.workout_plan_id, workout.start_time, workout.finish_time, workout.image);
             if(!added)
                 return res.status(401).json({
                     success: false,
